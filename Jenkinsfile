@@ -2,8 +2,7 @@ pipeline {
   agent any
 
   options {
-    timestamps()
-    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm'])
+    ansiColor('xterm') 
   }
 
   environment {
