@@ -3,11 +3,11 @@ pipeline {
 
   options {
     timestamps()
-    ansiColor('xterm')
+    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm'])
   }
 
   environment {
-    // Example: NODE_ENV = 'test'
+    NODE_ENV = 'test'
   }
 
   stages {
@@ -17,16 +17,9 @@ pipeline {
       }
     }
 
-    stage('Setup') {
+    stage('Install') {
       steps {
-        sh 'node -v || echo "Node not found—ensure Node is installed on the agent"'
         sh 'npm ci'
-      }
-    }
-
-    stage('Build') {
-      steps {
-        sh 'npm run build'
       }
     }
 
@@ -34,16 +27,11 @@ pipeline {
       steps {
         sh 'npm test'
       }
-      post {
-        always {
-          junit allowEmptyResults: true, testResults: '**/junit*.xml'
-        }
-      }
     }
 
     stage('Package') {
       steps {
-        sh 'tar -czf artifact.tar.gz app.js server.js package.json node_modules'
+        sh 'tar -czf artifact.tar.gz .'
         archiveArtifacts artifacts: 'artifact.tar.gz', fingerprint: true
       }
     }
@@ -53,21 +41,17 @@ pipeline {
         branch 'main'
       }
       steps {
-        sh '''
-          echo "Deploy placeholder—replace with your script"
-          # Example: scp artifact.tar.gz user@server:/opt/app/
-          # Or docker build/push, or kubectl apply
-        '''
+        sh 'echo "Deploy step placeholder"'
       }
     }
   }
 
   post {
     success {
-      echo 'Pipeline succeeded'
+      echo 'Pipeline completed successfully!'
     }
     failure {
-      echo 'Pipeline failed'
+      echo 'Pipeline failed.'
     }
   }
 }
